@@ -1,26 +1,3 @@
-data = r"""
-Hello, My name is {{ omar }}
-my parent name is {{ parent.name }}
-I want to condition on something
-{{ if count == 1 }}
-this is data
-{{ omar.parent[name] }}
-this is another data
-{{ endif }}
-
-
-and finally this is for loops:
-{{ for var in range(1, 5) }}
-data inside the loop
-{{ var + 1 }}
-
-{{ endfor }}
-
-conditioning on string
-{{ if name == "o\"omar'\qmar" }}
-yay!
-{{ endif }}
-"""
 import ply.lex as lex
 reserved = {
     'for'   : 'FOR',
