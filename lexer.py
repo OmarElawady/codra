@@ -44,12 +44,18 @@ def t_begin_code(t):
 
 def t_DATA(t):
     r'.|\n'
+    if t.value == '\n':
+        t.lexer.lineno += 1
     t.lexer.stored_data += t.value
 
 def t_code_NUMBER(t):
     r'\d+'
     t.value = int(t.value)
     return t
+
+def t_code_newlines(t):
+    r'\n+'
+    t.lexer.lineno += len(t.value)
 
 def t_code_end(t):
     r'}}'
@@ -59,6 +65,7 @@ def t_code_ID(t):
     r'[a-zA-Z_][a-zA-Z_0-9]*'
     t.type = reserved.get(t.value,'ID')
     return t
+
 def t_code_begin_string(t):
     r'"'
     t.lexer.begin('string')
@@ -74,6 +81,8 @@ def t_string_escaped(t):
     elif t.value[1] == 't':
         t.lexer.matched_string += '\t'
     else:
+        if t.value[1] == '\n':
+            t.lexer.lineno += 1
         t.lexer.matched_string += t.value[1]
 
 def t_string_char(t):
@@ -88,7 +97,11 @@ def t_string_end_string(t):
     t.lexer.matched_string = ""
     return t
 
-t_code_ignore = ' \n\t'
+def t_string_error(t):
+    print("string error detected: This shouldn't be reached")
+    t.lexer.skip(1)
+
+t_code_ignore = ' \t'
 t_code_EQ = r'=='
 t_code_NEQ = r'!='
 t_code_LE = r'<='

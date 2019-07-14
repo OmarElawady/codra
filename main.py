@@ -15,8 +15,10 @@ class Annotator:
         self.annotate(node)
     
     def annotate(self, node):
-        getattr(self, node.get_name().replace('-', '_'))(node)
-    
+        try:
+            getattr(self, node.get_name().replace('-', '_'))(node)
+        except Exception as e:
+            print("Error at line " + str(node.get_line()) + ": " + str(e))
     def annotate_children(self, node):
         chs = node.get_children()
         for ch in chs:
@@ -221,7 +223,7 @@ class Annotator:
 
 class Template:
     def __init__(self, template):
-        self.ast = parser.parse(template)
+        self.ast = parser.parse(template, tracking=True)
         self.symbol_table = SymbolTable()
         self.annotator = Annotator()
 
@@ -260,7 +262,7 @@ this is another data
 and finally this is for loops:
 {{ for var in range(1, 5) }}
 data inside the loop
-{{ var + 1 }}
+{{ var + "1" }}
 
 {{ endfor }}
 
