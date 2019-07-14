@@ -1,47 +1,20 @@
 from parser import parser
 from symboltable import SymbolTable
 from functools import reduce
-data = r"""
-Hello, My name is {{ omar }}
-my parent name is {{ parent.name }}
-I want to condition on something
-{{ if count == 1 }}
-this is data
-{{ omar.parent[name] }}
-this is another data
-{{ endif }}
 
-
-and finally this is for loops:
-{{ for var in range(1, 5) }}
-data inside the loop
-{{ var + 1 }}
-
-{{ endfor }}
-
-conditioning on string
-{{ if name == "o\"omar'\qmar" }}
-yay!
-{{ endif }}
-"""
 def strip(string):
     if len(string) and string[0] == '\n':
         string = string[1:]
     if len(string) and string[-1] == '\n':
         string = string[:-1]
     return string
-class Annotator:
-    def __init__(self):
-        self.evaluator = {
-        }
 
+class Annotator:
     def evaluate(self, node, symbol_table):
         self.symbol_table = symbol_table
         self.annotate(node)
     
     def annotate(self, node):
-        if type(node) == str:
-            print(node)
         getattr(self, node.get_name().replace('-', '_'))(node)
     
     def annotate_children(self, node):
@@ -87,12 +60,39 @@ class Annotator:
             result += chs[2].get_value()
             self.symbol_table.pop(chs[0].get_value())
         node.set_value(strip(result))
-    
+   
+    def construct_for_pack(self, node):
+        chs = node.get_children()
+        self.annotate(chs[0])
+        self.annotate(chs[1])
+        self.annotate(chs[2])
+        s = chs[2].get_value()
+        result = ""
+        for tup in s:
+            self.symbol_table.add(chs[0].get_value(), tup[0])
+            for i, var in enumerate(chs[1].get_value()):
+                self.symbol_table.add(var, tup[i + 1])
+            self.annotate(chs[3])
+            result += chs[3].get_value()
+            self.symbol_table.pop(chs[0].get_value())
+            for var in chs[1].get_value():
+                self.symbol_table.pop(var)
+        node.set_value(result)
+
     def expression_id(self, node):
         self.annotate_children(node)
         id_name = node.get_children()[0].get_value()
         node.set_value(self.symbol_table.get_value(id_name))
-
+    
+    def ids_one(self, node):
+        self.annotate_children(node)
+        chs = node.get_children()
+        node.set_value([chs[0].get_value()])
+    
+    def ids_many(self, node):
+        self.annotate_children(node)
+        self.set_value([chs[0].get_value()] + chs[1].get_value())
+        
     def expression_dot(self, node):
         self.annotate_children(node)
         chs = node.get_children()
@@ -187,29 +187,26 @@ class Annotator:
         chs = node.get_children()
         node.set_value(not chs[0].get_value())
    
+    def expression_dispatch_empty(self, node):
+       self.annotate_children(node)
+       chs = node.get_children()
+       node.set_value(chs[0].get_value()())
+
     def expression_dispatch(self, node):
         self.annotate_children(node)
         chs = node.get_children()
         node.set_value(chs[0].get_value()(*chs[1].get_value()))
     
-    def params_full(self, node):
-        self.annotate_children(node)
-        chs = node.get_children()
-        node.set_value(chs[0].get_value())
-    
-    def params_empty(self, node):
-        node.set_value([])
-    
-    def params1(self, node):
-        self.annotate_children(node)
-        chs = node.get_children()
-        node.set_value([chs[0].get_value()] + chs[1].get_value())
-
-    def params1_1(self, node):
+    def params_one(self, node):
         self.annotate_children(node)
         chs = node.get_children()
         node.set_value([chs[0].get_value()])
-
+    
+    def params_many(self, node):
+        self.annotate_children(node)
+        chs = node.get_children()
+        node.set_value(chs[0].get_value() + [chs[1].get_value()])
+    
     def param(self, node):
         self.annotate_children(node)
         chs = node.get_children()
@@ -221,6 +218,7 @@ class Annotator:
 
     def DATA(self, node):
         node.set_value(node.get_children()[0])
+
 class Template:
     def __init__(self, template):
         self.ast = parser.parse(template)
@@ -235,18 +233,6 @@ class Template:
         self.annotator.evaluate(self.ast, self.symbol_table)
         return self.ast.get_value()
 
-data = """
-{{ for i in range(1, 10) }}
-  {{ for j in range(1, i) }}
-    {{ if is_prime(i + j) }}
-        {{i}} + {{j}} = {{i + j}} is prime
-    {{ endif }}
-    {{ if not is_prime(i + j) }}
-        {{i}} + {{j}} = {{i + j}} is not prime
-    {{ endif }}
-  {{ endfor }}
-{{ endfor }}
-"""
 class WithParent:
     def __init__(self):
         self.parent = ['ibrahem']
@@ -260,5 +246,45 @@ def is_prime(n):
             return False
     return True
 
-print(Template(data).render(is_prime=is_prime))
+data = r"""
+Hello, My name is {{ omar }}
+my parent name is {{ parent.name }}
+I want to condition on something
+{{ if count == 1 }}
+this is data
+{{ omar1.parent[name] }}
+this is another data
+{{ endif }}
+
+
+and finally this is for loops:
+{{ for var in range(1, 5) }}
+data inside the loop
+{{ var + 1 }}
+
+{{ endfor }}
+
+conditioning on string
+{{ if name == "o\"omar'\qmar" }}
+yay!
+{{ endif }}
+Functinos:
+With empty arguments: {{ f1() }}
+With one arg: {{ f2(1) }}
+With two args: {{ f3(1, 2) }}
+multiple elements for:
+{{ for x, y in enumerate(lst)}}
+{{ str(x) + " " + str(y) }}
+{{ endfor }}
+"""
+def f1():
+    return 1
+
+def f2(n):
+    return n
+
+def f3(a, b):
+    return a + b
+
+print(Template(data).render(omar="omar", parent=WithName(), count=1, omar1=WithParent(), name = 0, f1 = f1, f2 = f2, f3 = f3, str = str, enumerate = enumerate, lst = [1, 2, 3]))
 

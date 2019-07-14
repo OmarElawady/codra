@@ -6,7 +6,7 @@ class Node:
     def __init__(self, name, children):
         self.name = name
         self.children = children
-        self.value = None # value for expressiona and strings for rest
+        self.value = None # semantic value
 
     def __str__(self):
         childs = str(reduce(lambda x, y: x + '\n' + y, list(map(str, self.children)), ''))
@@ -45,6 +45,10 @@ def p_construct_for(p):
     "construct : FOR ID IN expression program ENDFOR"
     p[0] = Node('construct-for', [Node('ID', [p[2]]), p[4], p[5]])
 
+def p_construct_for_pack(p):
+    "construct : FOR ID ',' ids IN expression program ENDFOR"
+    p[0] = Node('construct-for-pack', [Node('ID', [p[2]]), p[4], p[6], p[7]])
+
 def p_expression_dot(p):
     "expression : expression '.' ID"
     p[0] = Node('expression-dot', [p[1], Node('ID', [p[3]])])
@@ -52,6 +56,14 @@ def p_expression_dot(p):
 def p_expression_id(p):
     "expression : ID"
     p[0] = Node('expression-id', [Node('ID', [p[1]])])
+
+def p_ids_one(p):
+    "ids : ID"
+    p[0] = Node('ids-one', [Node('ID', [p[1]])])
+
+def p_ids_many(p):
+    "ids : ids ',' ID"
+    p[0] = Node('ids-many', [p[1], Node('ID', [p[3]])])
 
 def p_expression_access(p):
     "expression : expression '[' expression ']'"
@@ -121,25 +133,21 @@ def p_expression_le(p):
     "expression : expression LE expression"
     p[0] = Node('expression-lE', [[p[1], p[3]]])
 
+def p_expression_dispatch_empty(p):
+    "expression : expression '(' ')'"
+    p[0] = Node('expression-dispatch-empty', [p[1]])
+
 def p_expression_dispatch(p):
     "expression : expression '(' params ')'"
     p[0] = Node('expression-dispatch', [p[1], p[3]])
 
-def p_params_full(p):
-    "params : params1"
-    p[0] = Node('params-full', [p[1]])
+def p_params_one(p):
+    "params : param"
+    p[0] = Node('params-one', [p[1]])
 
-def p_params_empty(p):
-    "params : "
-    p[0] = Node('params-empty', [])
-
-def p_params1(p):
-    "params1 : param ',' params1"
-    p[0] = Node('params1', [p[1], p[3]])
-
-def p_params1_1(p):
-    "params1 : param"
-    p[0] = Node('params1-1', [p[1]])
+def p_params_many(p):
+    "params : params ',' param"
+    p[0] = Node('params-many', [p[1], p[3]])
 
 def p_param(p):
     "param : expression"
