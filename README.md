@@ -3,11 +3,12 @@
 Codra is a template engine written in python to render a string given its template and the data to fill this template
 ## Installation
 
-Yet to be submitted on pip.
+`pip install codra`
 
 ## Example
 
 ```python
+from codra import Template
 template = r"""
 Hello my name is {{ name }}. I am {{ age }} years old.
 This is the activities I do:
