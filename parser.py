@@ -23,6 +23,7 @@ class Node:
     
     def get_line(self):
         return self.lineno
+
     def set_value(self, value):
         self.value = value
 

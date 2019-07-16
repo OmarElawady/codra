@@ -19,6 +19,7 @@ class Annotator:
             getattr(self, node.get_name().replace('-', '_'))(node)
         except Exception as e:
             print("Error at line " + str(node.get_line()) + ": " + str(e))
+
     def annotate_children(self, node):
         chs = node.get_children()
         for ch in chs:
