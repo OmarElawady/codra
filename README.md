@@ -140,7 +140,8 @@ Hello {{ name }}.
 
 this evaluates to:
 
-```"""
+```python
+"""
 This is condition to greet Alice only.
 
 Hello Alice.
@@ -174,7 +175,8 @@ Template("""
 
 evaluates to:
 
-```"""
+```python
+"""
 
 1. a
 
