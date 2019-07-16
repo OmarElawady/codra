@@ -236,58 +236,59 @@ class Template:
         self.annotator.evaluate(self.ast, self.symbol_table)
         return self.ast.get_value()
 
-class WithParent:
-    def __init__(self):
-        self.parent = ['ibrahem']
+if __name__ == "__main__":
+    class WithParent:
+        def __init__(self):
+            self.parent = ['ibrahem']
 
-class WithName:
-    def __init__(self):
-        self.name = "7mada"
-def is_prime(n):
-    for x in range(2, n):
-        if n % x == 0:
-            return False
-    return True
+    class WithName:
+        def __init__(self):
+            self.name = "7mada"
+    def is_prime(n):
+        for x in range(2, n):
+            if n % x == 0:
+                return False
+        return True
 
-data = r"""
-Hello, My name is {{ omar }}
-my parent name is {{ parent.name }}
-I want to condition on something
-{{ if count == 1 }}
-this is data
-{{ omar1.parent[name] }}
-this is another data
-{{ endif }}
+    data = r"""
+    Hello, My name is {{ omar }}
+    my parent name is {{ parent.name }}
+    I want to condition on something
+    {{ if count == 1 }}
+    this is data
+    {{ omar1.parent[name] }}
+    this is another data
+    {{ endif }}
 
 
-and finally this is for loops:
-{{ for var in range(1, 5) }}
-data inside the loop
-{{ var + "1" }}
+    and finally this is for loops:
+    {{ for var in range(1, 5) }}
+    data inside the loop
+    {{ var + "1" }}
 
-{{ endfor }}
+    {{ endfor }}
 
-conditioning on string
-{{ if name == "o\"omar'\qmar" }}
-yay!
-{{ endif }}
-Functinos:
-With empty arguments: {{ f1() }}
-With one arg: {{ f2(1) }}
-With two args: {{ f3(1, 2) }}
-multiple elements for:
-{{ for x, y in enumerate(lst)}}
-{{ str(x) + " " + str(y) }}
-{{ endfor }}
-"""
-def f1():
-    return 1
+    conditioning on string
+    {{ if name == "o\"omar'\qmar" }}
+    yay!
+    {{ endif }}
+    Functinos:
+    With empty arguments: {{ f1() }}
+    With one arg: {{ f2(1) }}
+    With two args: {{ f3(1, 2) }}
+    multiple elements for:
+    {{ for x, y in enumerate(lst)}}
+    {{ str(x) + " " + str(y) }}
+    {{ endfor }}
+    """
+    def f1():
+        return 1
 
-def f2(n):
-    return n
+    def f2(n):
+        return n
 
-def f3(a, b):
-    return a + b
+    def f3(a, b):
+        return a + b
 
-print(Template(data).render(omar="omar", parent=WithName(), count=1, omar1=WithParent(), name = 0, f1 = f1, f2 = f2, f3 = f3, str = str, enumerate = enumerate, lst = [1, 2, 3]))
+    print(Template(data).render(omar="omar", parent=WithName(), count=1, omar1=WithParent(), name = 0, f1 = f1, f2 = f2, f3 = f3, str = str, enumerate = enumerate, lst = [1, 2, 3]))
 
