@@ -92,7 +92,7 @@ You can use `==`, `!=` to check for equality and `<`, `<=`, `>` and '>=` to comp
 
 _Example_:
 
-`1 == 2 or not 3 == 4` evaluates to True
+`1 == 2 or not 3 == 4` evaluates to `True`
 
 #### Access operators
 
@@ -112,7 +112,7 @@ The built in functions `len` and `range` is supplied by default. To use another 
 
 _Example_:
 
-`Template("{{ is_odd(1) }}").render(is_odd = lambda x : x % 2 == 1)` evaluates to "True"
+`Template("{{ is_odd(1) }}").render(is_odd = lambda x : x % 2 == 1)` evaluates to `"True"`
 
 ### If conditions
 
@@ -120,10 +120,11 @@ If conditions are used to print the enclosing data only if the expression evalua
 
 The Syntax of if condition is:
 
+```python
 {{ if _condition_ }}
 _body_
 {{ endif }}
-
+```
 The body of the if can be any valid template (data, constructs or both). The if construct evaluates to its body if the condition is True, Otherwise, it's replaced by an empty string.
 
 _Example_:
@@ -139,12 +140,12 @@ Hello {{ name }}.
 
 this evaluates to:
 
-"""
+```"""
 This is condition to greet Alice only.
 
 Hello Alice.
 
-"""
+"""```
 
 ### For loops
 
@@ -157,7 +158,7 @@ _Examples_:
 ```python
 Template("""
 {{ for i in range(len(lst)) }}
-{{i}}. {{ lst[i] }}
+{{i + 1}}. {{ lst[i] }}
 {{ endfor }}
 """).render(lst = ['a', 'b', 'c'])
 ```
@@ -166,22 +167,20 @@ which is equivalent to:
 ```python
 Template("""
 {{ for i, e in enumerate(lst) }}
-{{i}}. {{ e }}
+{{i + 1}}. {{ e }}
 {{ endfor }}
 """).render(lst = ['a', 'b', 'c'], enumerate = enumerate)
 ```
 
 evaluates to:
 
-"""
+```"""
 
 1. a
 
-
 2. b
-
 
 3. c
 
-"""
+"""```
 
