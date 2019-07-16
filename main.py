@@ -41,13 +41,13 @@ class Annotator:
     
     def construct_expression(self, node):
         self.annotate_children(node)
-        node.set_value(strip(self.combine_children(node)))
+        node.set_value(self.combine_children(node))
 
     def construct_if(self, node):
         self.annotate_children(node)
         chs = node.get_children()
         if chs[0].get_value():
-            node.set_value(strip(chs[1].get_value()))
+            node.set_value(chs[1].get_value())
         else:
             node.set_value('')
 
@@ -62,7 +62,7 @@ class Annotator:
             self.annotate(chs[2])
             result += chs[2].get_value()
             self.symbol_table.pop(chs[0].get_value())
-        node.set_value(strip(result))
+        node.set_value(result)
    
     def construct_for_pack(self, node):
         chs = node.get_children()
