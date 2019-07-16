@@ -146,7 +146,8 @@ This is condition to greet Alice only.
 
 Hello Alice.
 
-"""```
+"""
+```
 
 ### For loops
 
@@ -184,5 +185,6 @@ evaluates to:
 
 3. c
 
-"""```
+"""
+```
 
