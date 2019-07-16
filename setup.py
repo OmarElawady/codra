@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="codra",
-    version="0.0.2",
+    version="0.0.3",
     author="Omar Elawady",
     author_email="omarelawady1998@gmail.com",
     description="A python template engine",

@@ -101,6 +101,14 @@ def t_string_error(t):
     print("string error detected: This shouldn't be reached")
     t.lexer.skip(1)
 
+def t_eof(t):
+    if t.lexer.stored_data == "":
+        return None
+    t.type = 'DATA'
+    t.value = t.lexer.stored_data
+    t.lexer.stored_data = ""
+    return t
+
 t_code_ignore = ' \t'
 t_code_EQ = r'=='
 t_code_NEQ = r'!='

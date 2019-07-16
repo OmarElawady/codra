@@ -224,7 +224,6 @@ class Annotator:
 
 class Template:
     def __init__(self, template):
-        parser.restart()
         self.ast = parser.parse(template, tracking=True)
         self.symbol_table = SymbolTable()
         self.annotator = Annotator()
